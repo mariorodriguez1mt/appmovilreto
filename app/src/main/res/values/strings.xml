@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">appmovilproyectos1</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">MARK Adornos</string>
+    <string name="nav_header_subtitle">Tienda online</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="about">Acerca de</string>
+
+    <string name="menu_home">Productos</string>
+    <string name="menu_gallery">Servicios</string>
+    <string name="menu_slideshow">Sucursales</string>
+
+    <string name="nameP1">USB Madera</string>
+    <string name="priceP1">$10000</string>
+    <string name="descrP1">Memoría USB de 60Gb U1 Diseñada para trabajos de alta velocidad.</string>
+
+    <string name="nameP2">Llavero arbol</string>
+    <string name="priceP2">$3000</string>
+    <string name="descrP2">Llavero personalizado con arbol de navidad.</string>
+
+    <string name="comprar">COMPRAR</string>
+    <string name="contentd">image company</string>
+    <string name="contentacercade">Somos una empresa novedosa dedicada a adornos de madera de alta
+    calidad buscando siempre innovar en los diseños y construcciones con el objetivo de mantener
+    al cliente satisfecho
+
+    Estamos ubicados en Bogota D.C - para mayor información ve a la página www.hhh.com (example)</string>
+
+    <string name="company">MARK Adornos – CRA 48D #98-118 B. Tibabuyes - Bogota D.C</string>
+    <string name="companyfiles">Cel: 3003004800 - correo: markcontac@mark.com.co</string>
+    <string name="botonServicios">Ver Mas</string>
+
+    <string name="carrito">Carrito de Compras</string>
+</resources>

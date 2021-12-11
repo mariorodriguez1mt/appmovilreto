@@ -1,9 +1,12 @@
 package usa.app.appmovilproyectos1.ui.home;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -19,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -29,6 +33,7 @@ import java.util.ArrayList;
 import usa.app.appmovilproyectos1.Carrocompras;
 import usa.app.appmovilproyectos1.R;
 import usa.app.appmovilproyectos1.databinding.FragmentProductosBinding;
+import usa.app.appmovilproyectos1.datos.DataBase;
 import usa.app.appmovilproyectos1.ui.model.Basededatos;
 import usa.app.appmovilproyectos1.ui.model.Producto;
 
@@ -39,8 +44,11 @@ public class HomeFragment extends Fragment {
     private LinearLayout layoutPadre;
     private LinearLayout layoutHorizontal;
     private LinearLayout layoutVertical;
+    private LinearLayout layoutVertical2;
     private Basededatos basededatos;
     private ArrayList<Producto> carrito;
+    private DataBase datos;
+    private SQLiteDatabase bDatosV;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -54,6 +62,10 @@ public class HomeFragment extends Fragment {
         /**
          * se instancia la base de datos y se instancia la variable carrito
          */
+
+        datos = new DataBase(getContext());
+
+
         basededatos = new Basededatos();
         carrito = new ArrayList<Producto>();
 
@@ -74,6 +86,14 @@ public class HomeFragment extends Fragment {
             layoutVertical = new LinearLayout(getContext());
             layoutVertical.setOrientation(LinearLayout.VERTICAL);
             layoutVertical.setLayoutParams(new LinearLayout.LayoutParams(0,wrapContent,2));
+
+            /**
+             * creo un layout vertical para adicional el botón de favoritos.
+             */
+
+            layoutVertical2 = new LinearLayout(getContext());
+            layoutVertical2.setOrientation(LinearLayout.VERTICAL);
+            layoutVertical2.setLayoutParams(new LinearLayout.LayoutParams(0,wrapContent,1));
 
             /**
              * creo imagen para cada uno de los productos
@@ -119,7 +139,7 @@ public class HomeFragment extends Fragment {
              * se agregan los botones
              */
             Button button = new Button(getContext());
-            button.setLayoutParams(new LinearLayout.LayoutParams(5,wrapContent,1));
+            button.setLayoutParams(new LinearLayout.LayoutParams(wrapContent,wrapContent,1));
             button.setText("+");
             button.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             button.setBackgroundColor(getResources().getColor(R.color.purple_700));
@@ -146,7 +166,7 @@ public class HomeFragment extends Fragment {
             });
 
             Button button2 = new Button(getContext());
-            button2.setLayoutParams(new LinearLayout.LayoutParams(5,wrapContent,1));
+            button2.setLayoutParams(new LinearLayout.LayoutParams(wrapContent,wrapContent,1));
             button2.setText("-");
             button2.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             button2.setBackgroundColor(getResources().getColor(R.color.purple_700));
@@ -162,33 +182,53 @@ public class HomeFragment extends Fragment {
                                 //Toast.makeText(getContext(), "Otro producto: " + prod.getName() + " Cant: " + prod.getCantidad() + " Agregado", Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                Toast.makeText(getContext(), "Cantidad de " + producto.getName() + "en 0", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Cantidad de " + producto.getName() + " en " + producto.getCantidad() , Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
                     else{
-                        Toast.makeText(getContext(), "Cantidad de " + producto.getName() + "en 0", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Cantidad de " + producto.getName() + " en 0", Toast.LENGTH_SHORT).show();
                     }
                     //Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
                 }
             });
 
+            Button button3 = new Button(getContext());
+            button3.setLayoutParams(new LinearLayout.LayoutParams(wrapContent,wrapContent,1));
+            //button3.setCompoundDrawables();
+            button3.setText("Add Fav");
+            button3.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            button3.setBackgroundColor(getResources().getColor(R.color.purple_700));
 
+            button3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    datos.agregarFavoritos(producto.getName(), producto.getDescription(), producto.getPrice(), producto.getImagen());
+                    Toast.makeText(getContext(), ""+datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
             /**
              * se muestran los componentes
              */
-            layoutVertical.addView(espacio);
+            //layoutVertical.addView(espacio);
             layoutVertical.addView(texto);
             layoutVertical.addView(texto2);
             layoutVertical.addView(texto3);
             layoutVertical.addView(texto4);
 
+            layoutVertical2.addView(button);
+            layoutVertical2.addView(button2);
+            layoutVertical2.addView(button3);
+
             layoutHorizontal.addView(image);
             layoutHorizontal.addView(layoutVertical);
-            layoutHorizontal.addView(button);
-            layoutHorizontal.addView(button2);
+            layoutHorizontal.addView(layoutVertical2);
+            //layoutHorizontal.addView(button);
+            //layoutHorizontal.addView(button2);
             layoutHorizontal.setGravity(Gravity.CENTER);
+            layoutPadre.addView(espacio);
             layoutPadre.addView(layoutHorizontal);
         }
 
@@ -244,16 +284,28 @@ public class HomeFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.compras){
             //Toast.makeText(getContext(), "Carrito de compras", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getContext(), Carrocompras.class);
-            Bundle bundle = new Bundle();
-            /**ArrayList<String> list = new ArrayList();
-            for(Producto producto:carrito){
-                list.add(producto.toString());
-            }**/
-            bundle.putParcelableArrayList("car",carrito);
-            intent.putExtras(bundle);
-            Log.e("res",""+bundle);
-            startActivity(intent);
+            AlertDialog.Builder alerDialog = new AlertDialog.Builder(getContext());
+            alerDialog.setTitle("¿Desea continuar?");
+            alerDialog.setMessage("Presione Carrito para continuar o Mantener para seguir aquí").setPositiveButton("Carrito", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getContext(), Carrocompras.class);
+                    Bundle bundle = new Bundle();
+                    /**ArrayList<String> list = new ArrayList();
+                     for(Producto producto:carrito){
+                     list.add(producto.toString());
+                     }**/
+                    bundle.putParcelableArrayList("car",carrito);
+                    intent.putExtras(bundle);
+                    //Log.e("res",""+bundle);
+                    startActivity(intent);
+                }
+            }).setNegativeButton("Mantener", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(getContext(), "Productos", Toast.LENGTH_SHORT).show();
+                }
+            }).show();
         }
         return false;
     }

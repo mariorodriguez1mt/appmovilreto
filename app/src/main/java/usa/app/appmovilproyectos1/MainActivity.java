@@ -111,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.favoritos){
+            Toast.makeText(getApplicationContext(), "Favoritos en construcción", Toast.LENGTH_SHORT).show();
+        }
         return false;
     }
 }

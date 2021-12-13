@@ -2,6 +2,7 @@ package usa.app.appmovilproyectos1.ui.home;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 
 import usa.app.appmovilproyectos1.Carrocompras;
+import usa.app.appmovilproyectos1.FavoritosApp;
 import usa.app.appmovilproyectos1.R;
 import usa.app.appmovilproyectos1.databinding.FragmentProductosBinding;
 import usa.app.appmovilproyectos1.datos.DataBase;
@@ -203,9 +205,39 @@ public class HomeFragment extends Fragment {
             button3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(datos.getFavoritos().getCount()!=0){
+                        //Toast.makeText(getContext(), "Producto existe en favoritos: cant: "+ datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
+                        //datos.deleteTodo();
+                        Cursor cursor = datos.getFavoritos();
+                        cursor.moveToFirst();
+                        int a = 0;
+                        int b = 0;
+                        do {
+                            int idc = cursor.getInt(1);
+                            Log.e("LOG",idc + " " + producto.getId());
+                            if(idc == producto.getId()){
+                                //Toast.makeText(getContext(), "Producto existe en favoritos: cant: "+ datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
+                                a = 1;
+                            }
+                            else{
+                                b=1;
+                            }
+                        }while(cursor.moveToNext());
+                        if (a == 1){
+                            Toast.makeText(getContext(), "Producto ya agregado a favoritos", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            datos.agregarFavoritos(producto.getId(),producto.getName(), producto.getDescription(), producto.getPrice(), producto.getImagen());
+                            Toast.makeText(getContext(), "Producto: "+ producto.getName() + " Agregado a Favoritos " + datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
+                        }
 
-                    datos.agregarFavoritos(producto.getName(), producto.getDescription(), producto.getPrice(), producto.getImagen());
-                    Toast.makeText(getContext(), ""+datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
+                        //Log.e("etiqueta: ",""+a+" "+b);
+                    }
+                    else{
+                        datos.agregarFavoritos(producto.getId(),producto.getName(), producto.getDescription(), producto.getPrice(), producto.getImagen());
+                        Toast.makeText(getContext(), "Producto: "+ producto.getName() + " Agregado a Favoritos " + datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
+                    }
+                    //datos.agregarFavoritos(producto.getName(), producto.getDescription(), producto.getPrice(), producto.getImagen());
                 }
             });
 
@@ -306,6 +338,12 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(getContext(), "Productos", Toast.LENGTH_SHORT).show();
                 }
             }).show();
+        }
+        if (item.getItemId() == R.id.favoritos){
+            //datos.deleteTodo();
+            //Toast.makeText(getContext(), "En proceso cargando", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), FavoritosApp.class);
+            startActivity(intent);
         }
         return false;
     }

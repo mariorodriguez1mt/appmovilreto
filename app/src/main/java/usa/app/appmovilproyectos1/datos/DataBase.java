@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DataBase extends SQLiteOpenHelper {
 
@@ -22,6 +23,7 @@ public class DataBase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE FAVORITOS(" +
                 "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "IDC INTEGER," +
                 "NAME TEXT,DESCRIPTION TEXT," +
                 "PRICE INTEGER,IMAGEN INTEGER)");
     }
@@ -38,14 +40,39 @@ public class DataBase extends SQLiteOpenHelper {
         return datosFav;
     }
 
-    public void deleteFavoritos(String name)
+    /**public String verificarProducto(String name){
+        Cursor cursor = getFavoritos();
+        int a = 0;
+        cursor.moveToFirst();
+        //Log.e("Primero",cursor.getString(1));
+        while(cursor.moveToNext()){
+            Log.e("Stringname",cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2));
+            if (cursor.getString(1) == name){
+                a = 1;
+            }
+        }
+        //Log.e("a = ",""+a);
+        if(a==1){
+            return "Encontrado";
+        }
+        else{
+            return "No Encontrado";
+        }
+    }**/
+
+    public void deleteFavoritos(Integer idc)
     {
-        sqLiteDatabase.execSQL("DELETE FROM FAVORITOS WHERE NAME='"+name+"'");
+        sqLiteDatabase.execSQL("DELETE FROM FAVORITOS WHERE IDC="+idc);
     }
 
-    public void agregarFavoritos(String name, String descrip, Integer price, Integer image)
+    public void deleteTodo(){
+        sqLiteDatabase.execSQL("DELETE FROM FAVORITOS");
+    }
+
+    public void agregarFavoritos(Integer idc, String name, String descrip, Integer price, Integer image)
     {
         ContentValues cValues = new ContentValues();
+        cValues.put("IDC",idc);
         cValues.put("NAME",name);
         cValues.put("DESCRIPTION",descrip);
         cValues.put("PRICE",price);

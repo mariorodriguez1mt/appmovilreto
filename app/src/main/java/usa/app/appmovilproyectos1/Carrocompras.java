@@ -17,9 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 import usa.app.appmovilproyectos1.ui.model.Producto;
+import usa.app.appmovilproyectos1.ui.model.ProductoRef;
 
 public class Carrocompras extends AppCompatActivity {
     private LinearLayout lyCompras;
@@ -42,9 +45,9 @@ public class Carrocompras extends AppCompatActivity {
         ArrayList lista1 = new ArrayList();
 
         Intent intentCarrito = getIntent();
-        ArrayList<Producto> carritoDeCompras = (ArrayList<Producto>) intentCarrito.getSerializableExtra("car");
+        ArrayList<ProductoRef> carritoDeCompras = (ArrayList<ProductoRef>) intentCarrito.getSerializableExtra("car");
 
-        for(Producto producto:carritoDeCompras) {
+        for(ProductoRef producto:carritoDeCompras) {
             if(producto.getCantidad()>0){
                 lista1.add(producto.getCantidad());
                 prTotal = prTotal+producto.getCantidad()*producto.getPrice();
@@ -57,7 +60,8 @@ public class Carrocompras extends AppCompatActivity {
                 layoutVerticalCamp.setLayoutParams(new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,2));
 
                 ImageView image1 = new ImageView(getApplicationContext());
-                image1.setImageResource(producto.getImagen());
+                //image1.setImageResource(producto.getImagen());
+                Picasso.get().load(producto.getImagen()).into(image1);
                 image1.setLayoutParams(new LinearLayout.LayoutParams(100,200,1));
 
                 TextView espacio1 = new TextView(getApplicationContext());

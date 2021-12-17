@@ -1,5 +1,7 @@
 package usa.app.appmovilproyectos1.ui.home;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -29,15 +31,28 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import usa.app.appmovilproyectos1.Carrocompras;
 import usa.app.appmovilproyectos1.FavoritosApp;
 import usa.app.appmovilproyectos1.R;
 import usa.app.appmovilproyectos1.databinding.FragmentProductosBinding;
+import usa.app.appmovilproyectos1.datos.ConsultaBd;
 import usa.app.appmovilproyectos1.datos.DataBase;
 import usa.app.appmovilproyectos1.ui.model.Basededatos;
+import usa.app.appmovilproyectos1.ui.model.MySingleton;
 import usa.app.appmovilproyectos1.ui.model.Producto;
+import usa.app.appmovilproyectos1.ui.model.ProductoRef;
 
 public class HomeFragment extends Fragment {
 
@@ -48,9 +63,14 @@ public class HomeFragment extends Fragment {
     private LinearLayout layoutVertical;
     private LinearLayout layoutVertical2;
     private Basededatos basededatos;
-    private ArrayList<Producto> carrito;
+    private ArrayList<ProductoRef> carrito;
     private DataBase datos;
     private SQLiteDatabase bDatosV;
+    private ConsultaBd restBd;
+    private ArrayList<ProductoRef> productosx;
+    private ArrayList<ProductoRef> productosy;
+    int matchParent = LinearLayout.LayoutParams.MATCH_PARENT;
+    int wrapContent = LinearLayout.LayoutParams.WRAP_CONTENT;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -59,19 +79,107 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         layoutPadre = (LinearLayout) binding.layPadre;
-        int matchParent = LinearLayout.LayoutParams.MATCH_PARENT;
-        int wrapContent = LinearLayout.LayoutParams.WRAP_CONTENT;
+
         /**
          * se instancia la base de datos y se instancia la variable carrito
          */
 
         datos = new DataBase(getContext());
+        restBd = new ConsultaBd();
 
-
+        getSucursalesApex();
         basededatos = new Basededatos();
-        carrito = new ArrayList<Producto>();
+        carrito = new ArrayList<ProductoRef>();
 
-        for(Producto producto:basededatos.getProductos()){
+
+        /**
+        final TextView textView = binding.textView2;
+
+         final Button button = binding.button5;
+        final Button button1 = binding.buttonc1;
+        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                textView.setText(s);
+            }
+        });**/
+        /**
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
+            }
+        });**/
+
+        return root;
+    }
+
+    public ArrayList<ProductoRef> getSucursalesApex(){
+        String url = "https://g6b8ff7bc67d349-db202109302119.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/prod/prod";
+        productosx = new ArrayList<>();
+
+        ProgressDialog barra = new ProgressDialog(getContext());
+        barra.setMessage("Cargando Información del servidor...");
+        barra.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        barra.show();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            ProductoRef producto = null;
+                            JSONArray arrayProducto = response.getJSONArray("items");
+                            JSONObject objeto = null;
+                            Log.e("Array: ",""+arrayProducto.length());
+                            for(int i = 0; i < arrayProducto.length();i++){
+                                objeto = arrayProducto.getJSONObject(i);
+                                int id = objeto.getInt("id");
+                                String imagen = objeto.getString("imagen");
+                                String nombre = objeto.getString("nombre");
+                                int price = objeto.getInt("price");
+                                String descripcion = objeto.getString("descripcion");
+                                int cantidad = objeto.getInt("cantidad");
+
+                                producto = new ProductoRef(id,imagen,nombre,price,descripcion,cantidad);
+                                productosx.add(producto);
+                                //Log.e("producto: ",""+productosx.size());
+                            }
+                            mostrarInformacion(productosx);
+                            barra.cancel();
+                            //Log.w("REST", "VOLLEY: " + arraySucursales.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        //textView.setText("Response: " + response.toString());
+                        //barra.cancel();
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+                        Log.e("REST", "VOLLEY: " + error.toString());
+                        //barra.cancel();
+
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+        return productosx;
+    }
+
+    private void mostrarInformacion(ArrayList<ProductoRef> prodxt){
+        for(ProductoRef producto:prodxt){
 
             //Log.e("Evento",producto.getName());
             /**
@@ -102,7 +210,8 @@ public class HomeFragment extends Fragment {
              */
             ImageView image = new ImageView(getContext());
             /** ojo porque la imagen en la base de datos está como Integer */
-            image.setImageResource(producto.getImagen());
+            //image.setImageResource(producto.getImagen());
+            Picasso.get().load(producto.getImagen()).into(image);
             image.setLayoutParams(new LinearLayout.LayoutParams(100,200,1));
 
             /**
@@ -149,8 +258,9 @@ public class HomeFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
                     if(buscarProducto(carrito,producto)){
-                        for(Producto prod:carrito){
+                        for(ProductoRef prod:carrito){
                             if(prod.getId() == producto.getId()){
                                 prod.setCantidad(prod.getCantidad()+1);
                                 texto4.setText("Cant Carrito: " + prod.getCantidad());
@@ -163,7 +273,6 @@ public class HomeFragment extends Fragment {
                         texto4.setText("Cant Carrito: " + 1);
                         Toast.makeText(getContext(), "Nuevo producto: " + producto.getName() + " Agregado", Toast.LENGTH_SHORT).show();
                     }
-                    //Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -176,8 +285,9 @@ public class HomeFragment extends Fragment {
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
                     if(buscarProducto(carrito,producto)){
-                        for(Producto prod:carrito){
+                        for(ProductoRef prod:carrito){
                             if(prod.getId() == producto.getId() && prod.getCantidad()>0){
                                 prod.setCantidad(prod.getCantidad()-1);
                                 texto4.setText("Cant Carrito: " + prod.getCantidad());
@@ -191,7 +301,6 @@ public class HomeFragment extends Fragment {
                     else{
                         Toast.makeText(getContext(), "Cantidad de " + producto.getName() + " en 0", Toast.LENGTH_SHORT).show();
                     }
-                    //Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -205,6 +314,7 @@ public class HomeFragment extends Fragment {
             button3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
                     if(datos.getFavoritos().getCount()!=0){
                         //Toast.makeText(getContext(), "Producto existe en favoritos: cant: "+ datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
                         //datos.deleteTodo();
@@ -214,7 +324,7 @@ public class HomeFragment extends Fragment {
                         int b = 0;
                         do {
                             int idc = cursor.getInt(1);
-                            Log.e("LOG",idc + " " + producto.getId());
+                            //Log.e("LOG",idc + " " + producto.getId());
                             if(idc == producto.getId()){
                                 //Toast.makeText(getContext(), "Producto existe en favoritos: cant: "+ datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
                                 a = 1;
@@ -237,7 +347,6 @@ public class HomeFragment extends Fragment {
                         datos.agregarFavoritos(producto.getId(),producto.getName(), producto.getDescription(), producto.getPrice(), producto.getImagen());
                         Toast.makeText(getContext(), "Producto: "+ producto.getName() + " Agregado a Favoritos " + datos.getFavoritos().getCount(), Toast.LENGTH_SHORT).show();
                     }
-                    //datos.agregarFavoritos(producto.getName(), producto.getDescription(), producto.getPrice(), producto.getImagen());
                 }
             });
 
@@ -263,38 +372,10 @@ public class HomeFragment extends Fragment {
             layoutPadre.addView(espacio);
             layoutPadre.addView(layoutHorizontal);
         }
-
-        /**
-        final TextView textView = binding.textView2;
-
-         final Button button = binding.button5;
-        final Button button1 = binding.buttonc1;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });**/
-        /**
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "Próximamente se agrega función de compra", Toast.LENGTH_SHORT).show();
-            }
-        });**/
-
-        return root;
     }
 
-    private boolean buscarProducto(ArrayList<Producto> carro, Producto producto){
-        for(Producto p: carro){
+    private boolean buscarProducto(ArrayList<ProductoRef> carro, ProductoRef producto){
+        for(ProductoRef p: carro){
             if(producto.getId() == p.getId()){
                 return true;
             }

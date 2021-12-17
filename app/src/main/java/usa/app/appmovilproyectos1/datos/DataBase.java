@@ -25,7 +25,7 @@ public class DataBase extends SQLiteOpenHelper {
                 "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "IDC INTEGER," +
                 "NAME TEXT,DESCRIPTION TEXT," +
-                "PRICE INTEGER,IMAGEN INTEGER)");
+                "PRICE INTEGER,IMAGEN TEXT)");
     }
 
     @Override
@@ -69,7 +69,7 @@ public class DataBase extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DELETE FROM FAVORITOS");
     }
 
-    public void agregarFavoritos(Integer idc, String name, String descrip, Integer price, Integer image)
+    public void agregarFavoritos(Integer idc, String name, String descrip, Integer price, String image)
     {
         ContentValues cValues = new ContentValues();
         cValues.put("IDC",idc);

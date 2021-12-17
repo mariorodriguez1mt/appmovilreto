@@ -25,11 +25,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 import usa.app.appmovilproyectos1.databinding.ActivityFavoritosAppBinding;
 import usa.app.appmovilproyectos1.datos.DataBase;
 import usa.app.appmovilproyectos1.ui.model.Producto;
+import usa.app.appmovilproyectos1.ui.model.ProductoRef;
 
 public class FavoritosApp extends AppCompatActivity {
 
@@ -50,24 +53,24 @@ public class FavoritosApp extends AppCompatActivity {
         getSupportActionBar().setTitle("Favoritos");
         lyFavApp = (LinearLayout) findViewById(R.id.layfavoritosapp);
 
-        ArrayList<Producto> listaFavoritos = new ArrayList<Producto>();
+        ArrayList<ProductoRef> listaFavoritos = new ArrayList<ProductoRef>();
         datosf = new DataBase(getApplicationContext());
         Cursor datosFav = datosf.getFavoritos();
         if (datosFav.getCount()!=0){
             datosFav.moveToFirst();
                 do{
-                    int a = datosFav.getInt(1);
-                    String b = datosFav.getString(2);
-                    String c = datosFav.getString(3);
-                    int d = datosFav.getInt(4);
-                    int e = datosFav.getInt(5);
+                    int a = datosFav.getInt(1);//ID
+                    String b = datosFav.getString(2);//NAME
+                    String c = datosFav.getString(3);//DESCRIPTION
+                    int d = datosFav.getInt(4);//PRICE
+                    String e = datosFav.getString(5);//IMAGEN
 
-                    Producto producto = new Producto(a,e,b,d,c,0);
-                    listaFavoritos.add(producto);
+                    ProductoRef productoF = new ProductoRef(a,e,b,d,c,0);
+                    listaFavoritos.add(productoF);
 
                     }while(datosFav.moveToNext());}
 
-        for(Producto producto:listaFavoritos) {
+        for(ProductoRef producto:listaFavoritos) {
 
                 layoutHorizontalFav = new LinearLayout(getApplicationContext());
                 layoutHorizontalFav.setOrientation(LinearLayout.HORIZONTAL);
@@ -78,7 +81,8 @@ public class FavoritosApp extends AppCompatActivity {
                 layoutVerticalFav.setLayoutParams(new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,2));
 
                 ImageView image1 = new ImageView(getApplicationContext());
-                image1.setImageResource(producto.getImagen());
+                //image1.setImageResource(producto.getImagen());
+                Picasso.get().load(producto.getImagen()).into(image1);
                 image1.setLayoutParams(new LinearLayout.LayoutParams(100,200,1));
 
                 TextView espacio1 = new TextView(getApplicationContext());

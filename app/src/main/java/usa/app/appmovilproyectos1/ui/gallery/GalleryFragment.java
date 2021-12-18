@@ -32,23 +32,16 @@ public class GalleryFragment extends Fragment {
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textGallery;
-        final Button button1 = binding.buttonserv1;
+        //final TextView textView = binding.textGallery;
+        //final Button button1 = binding.buttonserv1;
 
-
+        /**
         galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
             }
-        });
-
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "Próximamente se mostrarán los Servicios", Toast.LENGTH_SHORT).show();
-            }
-        });
+        });*/
 
 
         return root;

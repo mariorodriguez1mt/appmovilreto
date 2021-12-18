@@ -62,6 +62,10 @@ public class SlideshowFragment extends Fragment {
         espacio.setText("");
         espacio.setTextSize(21.f);
 
+        TextView espacio2 = (TextView) binding.textViewespacio2;
+        espacio2.setText("");
+        espacio2.setTextSize(21.f);
+
         TextView titulo = (TextView) binding.textViewMap;
         titulo.setText("MARK HANDMADE SUCURSALES");
         titulo.setTextSize(TypedValue.COMPLEX_UNIT_DIP,21.f);

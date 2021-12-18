@@ -33,4 +33,10 @@
     <string name="botonServicios">Ver Mas</string>
 
     <string name="carrito">Carrito de Compras</string>
+    <string name="serviciosdatos">MARK ADORNOS coloca a tu disposición los siguientes servicios: </string>
+    <string name="servicios1">REPARACIÓN DE ADORNOS EN MADERA </string>
+    <string name="servicios2">DISEÑOS DE ADORNOS PERSONALIZADOS </string>
+    <string name="servcel">Cel: 3188885999 </string>
+    <string name="descrips1">Trae cualquier adorno que acá te lo reparamos. </string>
+    <string name="descrips2">¿Tienes algo pensado? Te lo creamos justo como lo deseas. </string>
 </resources>
